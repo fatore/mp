@@ -1,0 +1,6 @@
+Package: mp
+Title: Multidimensional projection package
+Version: 0.1
+Authors: "Francisco M. Fatore <fmfatore@gmail.com>"
+Description: Implementation of multidimensional projection techniques
+License: GPL-3
