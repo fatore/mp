@@ -3,7 +3,7 @@
 \alias{forceScheme}
 \title{Force Scheme}
 \usage{
-forceScheme(d, initial = NULL, maxIt = 50, tol = 0.1)
+forceScheme(d, initial = NULL, maxIt = 50, tol = 0.1, verbose = FALSE)
 }
 \arguments{
 \item{d}{A dissimilarity structure such as that returned by dist or a full
@@ -16,6 +16,8 @@ will be created when omitted.}
 
 \item{tol}{The tolerance for the accumulated error between iterations. Set it
 to 0 to guarantee it will run maxIt times.}
+
+\item{verbose}{A flag that indicates if the progress should be printed.}
 }
 \value{
 The 2D representation of the data.
@@ -28,7 +30,14 @@ factor, only a fraction of delta is used for better stability and a tolerance
 factor was introduced as a second stop criterion.
 }
 \examples{
-result = forceScheme(eurodist)
+# Eurodist example
+proj = forceScheme(eurodist)
+plot(proj, type = "n", xlab ="", ylab ="", asp=1, axes=FALSE, main="")
+text(proj, labels(eurodist), cex = 0.6)
+
+# Iris example
+proj = forceScheme(dist(iris[,1:4]))
+plot(proj, col=iris$Species)
 }
 \references{
 Eduardo Tejada, Rosane Minghim, Luis Gustavo Nonato: On improved

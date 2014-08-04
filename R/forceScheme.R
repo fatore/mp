@@ -13,6 +13,7 @@
 #' @param maxIt The maximum number of iterations that the method will run.
 #' @param tol The tolerance for the accumulated error between iterations. Set it
 #'   to 0 to guarantee it will run maxIt times.
+#' @param verbose A flag that indicates if the progress should be printed.
 #' @return The 2D representation of the data.
 #'
 #' @references Eduardo Tejada, Rosane Minghim, Luis Gustavo Nonato: On improved
@@ -20,12 +21,19 @@
 #'   data sets. Information Visualization 2(4): 218-231 (2003)
 #'
 #' @examples
-#' result = forceScheme(eurodist)
+#' # Eurodist example
+#' proj = forceScheme(eurodist)
+#' plot(proj, type = "n", xlab ="", ylab ="", asp=1, axes=FALSE, main="")
+#' text(proj, labels(eurodist), cex = 0.6)
+#'
+#' # Iris example
+#' proj = forceScheme(dist(iris[,1:4]))
+#' plot(proj, col=iris$Species)
 #' @seealso \code{\link[stats]{dist}} (stats) and \code{\link[proxy]{dist}}
 #'   (proxy) for d computation
 #'
 #' @export
-forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1) {
+forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1, verbose=FALSE) {
   # define EPSILON (minimum distance value for d2)
   EPSILON = 1E-5
 
@@ -50,7 +58,9 @@ forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1) {
 
   # iterate maxIt times
   for (i in 1:maxIt) {
-    print(paste("Iteration:", i))
+    if (verbose) {
+      print(paste("Iteration:", i))
+    }
 
     # create a shuffle array to minimize the order dependency factor
     s_j = sample(n)
@@ -99,7 +109,9 @@ forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1) {
 
     # check for the tolerance stop criterion
     if (abs(prevDeltaSum - deltaSum) < tol) {
-      print(paste("The difference of delta sum is less than tol:", abs(prevDeltaSum - deltaSum)))
+      if (verbose) {
+        print(paste("The difference of delta sum is less than tol:", abs(prevDeltaSum - deltaSum)))
+      }
       break
     }
     prevDeltaSum = deltaSum
