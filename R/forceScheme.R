@@ -10,10 +10,11 @@
 #'   symmetric matrix containing the dissimilarities.
 #' @param initial A initial 2D configuration (optional). A random configuration
 #'   will be created when omitted.
-#' @param maxIt The maximum number of iterations that the method will run.
+#' @param max.it The maximum number of iterations that the method will run.
 #' @param tol The tolerance for the accumulated error between iterations. Set it
-#'   to 0 to guarantee it will run maxIt times.
+#'   to 0 to guarantee it will run max.it times.
 #' @param verbose A flag that indicates if the progress should be printed.
+#' @param use.ext A flag that indicates if external C code should be used.
 #' @return The 2D representation of the data.
 #'
 #' @references Eduardo Tejada, Rosane Minghim, Luis Gustavo Nonato: On improved
@@ -32,8 +33,9 @@
 #' @seealso \code{\link[stats]{dist}} (stats) and \code{\link[proxy]{dist}}
 #'   (proxy) for d computation
 #'
+#' @useDynLib mp
 #' @export
-forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1, verbose=FALSE) {
+forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F, use.ext=T) {
   # define EPSILON (minimum distance value for d2)
   EPSILON = 1E-5
 
@@ -53,68 +55,77 @@ forceScheme = function(d, initial=NULL, maxIt=50, tol=0.1, verbose=FALSE) {
 
   p = initial
 
-  # set the previous delta sum as infinity
-  prevDeltaSum = 1/0
+  # switch core implementation
+  if (use.ext) { # call C
+    p = .C("force_scheme",
+           as.integer(1),
+           as.integer(2),
+           p=as.integer(0))$p
+  }
+  else { # proceed with R
+    # set the previous delta sum as infinity
+    prevDeltaSum = 1/0
 
-  # iterate maxIt times
-  for (i in 1:maxIt) {
-    if (verbose) {
-      print(paste("Iteration:", i))
-    }
+    # iterate max.it times
+    for (i in 1:max.it) {
+      if (verbose) {
+        print(paste("Iteration:", i))
+      }
 
-    # create a shuffle array to minimize the order dependency factor
-    s_j = sample(n)
-
-    # for each point
-    for (j in 1:n) {
-      # get the point index
-      p1_index = s_j[j]
-
-      # create another shuffle array
-      s_k = sample(n)
-
-      # reset delta sum
-      deltaSum = 0
+      # create a shuffle array to minimize the order dependency factor
+      s_j = sample(n)
 
       # for each point
-      for (k in 1:n) {
-        # get the second point index
-        p2_index = s_k[k]
+      for (j in 1:n) {
+        # get the point index
+        p1_index = s_j[j]
 
-        # skip itself
-        if (p1_index == p2_index) {
-          next;
+        # create another shuffle array
+        s_k = sample(n)
+
+        # reset delta sum
+        deltaSum = 0
+
+        # for each point
+        for (k in 1:n) {
+          # get the second point index
+          p2_index = s_k[k]
+
+          # skip itself
+          if (p1_index == p2_index) {
+            next;
+          }
+
+          # get the distance between the points in R2 (euclidean distance)
+          diff = p[p2_index,] - p[p1_index,]
+          d2 = sqrt(sum(diff^2))
+
+          # set a minimum distance for d2
+          d2 = max(d2, EPSILON)
+
+          # get the distance between the points in RN
+          dn = dmat[p1_index, p2_index]
+
+          # calculate delta
+          delta = (dn - d2) / fraction
+
+          # move the point_k in the direction of the point_j
+          p[p2_index,] = p[p2_index,] + delta * (diff / d2)
+
+          # update delta sum
+          deltaSum = deltaSum + abs(delta)
         }
-
-        # get the distance between the points in R2 (euclidean distance)
-        diff = p[p2_index,] - p[p1_index,]
-        d2 = sqrt(sum(diff^2))
-
-        # set a minimum distance for d2
-        d2 = max(d2, EPSILON)
-
-        # get the distance between the points in RN
-        dn = dmat[p1_index, p2_index]
-
-        # calculate delta
-        delta = (dn - d2) / fraction
-
-        # move the point_k in the direction of the point_j
-        p[p2_index,] = p[p2_index,] + delta * (diff / d2)
-
-        # update delta sum
-        deltaSum = deltaSum + abs(delta)
       }
-    }
 
-    # check for the tolerance stop criterion
-    if (abs(prevDeltaSum - deltaSum) < tol) {
-      if (verbose) {
-        print(paste("The difference of delta sum is less than tol:", abs(prevDeltaSum - deltaSum)))
+      # check for the tolerance stop criterion
+      if (abs(prevDeltaSum - deltaSum) < tol) {
+        if (verbose) {
+          print(paste("The difference of delta sum is less than tol:", abs(prevDeltaSum - deltaSum)))
+        }
+        break
       }
-      break
+      prevDeltaSum = deltaSum
     }
-    prevDeltaSum = deltaSum
   }
 
   # return the 2D rojection
