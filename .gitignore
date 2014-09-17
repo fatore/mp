@@ -41,7 +41,6 @@ Icon
 *.RData
 *.Rhistory
 *.Rproj.user
-*.Rproj
 NAMESPACE
 
 
