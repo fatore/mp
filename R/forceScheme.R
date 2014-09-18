@@ -35,13 +35,7 @@
 #'
 #' @useDynLib mp
 #' @export
-forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F, use.ext=T) {
-  # define EPSILON (minimum distance value for d2)
-  EPSILON = 1E-5
-
-  # define the fraction of delta
-  fraction = 8.0
-
+forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, EPSILON=1E-5, fraction=8.0, verbose=F, use.ext=T) {
   # convert d to a matrix
   dmat = as.matrix(d)
 
@@ -58,9 +52,13 @@ forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F, use.ext=T
   # switch core implementation
   if (use.ext) { # call C
     p = .C("force_scheme",
-           as.integer(1),
-           as.integer(2),
-           p=as.integer(0))$p
+           p = as.numeric(p),
+           as.numeric(dmat),
+           as.integer(n),
+           as.integer(max.it),
+           as.double(tol),
+           as.double(EPSILON),
+           as.double(fraction))$p
   }
   else { # proceed with R
     # set the previous delta sum as infinity
