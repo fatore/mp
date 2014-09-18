@@ -37,8 +37,6 @@ void force_scheme(double p[],
     for (i = 0; i < size; i++)
         s_j[i] = s_k[i] = i;
 
-    int asd = 0;
-
     for (i = 0; i < *max_it; i++) {
         shuffle(s_j, size);
         for (j = 0; j < size; j++) {
