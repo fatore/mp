@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <R.h>
 
 /*
  * Arrange the N elements of ARRAY in random order.
@@ -13,7 +13,7 @@ static void shuffle(size_t *array, size_t n)
     if (n > 1) {
         size_t i;
         for (i = 0; i < n - 1; i++) {
-            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+            size_t j = i + unif_rand() / (1 / (n - i) + 1);
             int t = array[j];
             array[j] = array[i];
             array[i] = t;
@@ -29,6 +29,9 @@ void force_scheme(double p[],
         const double *EPSILON,
         const double *fraction)
 {
+    // get R random number generator
+    GetRNGstate();
+
     double prev_delta_sum = 1. / 0., delta_sum, d2, dn, delta, diff_x, diff_y;
     size_t i, j, k, p1_index, p2_index;
     size_t size = (size_t) *n;
@@ -72,4 +75,7 @@ void force_scheme(double p[],
             break;
         prev_delta_sum = delta_sum;
     }
+
+    // free R random number generator
+    PutRNGstate();
 }

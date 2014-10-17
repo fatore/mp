@@ -1,6 +1,6 @@
-#' Force Scheme
+#' Force Scheme Projection
 #'
-#' Create a 2D representation of the data based on a dissimilarity matrix. A few
+#' Creates a 2D representation of the data based on a dissimilarity matrix. A few
 #' modifications have been made in relation to the method described in the
 #' literature: shuffled indices are used to minimize the order dependency
 #' factor, only a fraction of delta is used for better stability and a tolerance
@@ -51,7 +51,7 @@ forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F) {
 
   # check initial configuration
   if (nrow(initial) != n) {
-    stop("Provided initial configuration does not match the input matrix lenght.");
+    stop("Provided initial configuration does not match the input matrix length");
   }
 
   p = initial
