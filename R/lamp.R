@@ -21,6 +21,10 @@
 #' @useDynLib mp
 #' @export
 lamp = function(X, sample.indices=NULL, Ys=NULL) {
+  if (!is.matrix(X)) {
+    X = as.matrix(X)
+  }
+
   if (is.null(sample.indices)) {
     n = nrow(X)
     sample.indices = sample(1:n, sqrt(n))
@@ -30,17 +34,13 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
     Ys = forceScheme(dist(X[sample.indices, ]))
   }
 
+  if (!is.matrix(Ys)) {
+    Ys = as.matrix(Ys)
+  }
+
   # sanity check
   if (length(sample.indices) != nrow(Ys)) {
     stop("sample.indices and Ys do not match sizes")
-  }
-
-  # we only work with matrices
-  if (!is.matrix(X)) {
-    X = as.matrix(X)
-  }
-  if (!is.matrix(Ys)) {
-    Ys = as.matrix(Ys)
   }
 
   .Call("mp_lamp", X, sample.indices, Ys, PACKAGE="mp")
