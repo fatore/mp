@@ -1,34 +1,80 @@
-library(svd)
+#' Local Affine Multidimensional Projection
+#'
+#' Creates a 2D representation of the data based on an initial projectec sample.
+#'
+#' @param X A data frame or matrix to be projected.
+#' @param sample.indices The indices of data points in X considered as samples.
+#' @param Ys Initial 2D configuration of the data samples (will be ignored if
+#'   sample.indices is NULL).
+#' @return The 2D representation of the data.
+#'
+#' @references Joia, P.; Paulovich, F.V.; Coimbra, D.; Cuminato, J.A.; Nonato,
+#'   L.G., "Local Affine Multidimensional Projection," Visualization and
+#'   Computer Graphics, IEEE Transactions on , vol.17, no.12, pp.2563,2571,
+#'   Dec. 2011
+#'
+#' @examples
+#' # Iris example
+#' proj = lamp(iris[, 1:4])
+#' plot(proj, col = iris$Species)
+#'
+#' @useDynLib mp
+#' @export
+lamp = function(X, sample.indices=NULL, Ys=NULL) {
+  if (is.null(sample.indices)) {
+    n = nrow(X)
+    sample.indices = sample(1:n, sqrt(n))
+    Ys = forceScheme(dist(X[sample.indices, ]))
+  } else if (is.null(Ys)) {
+    sample.indices = as.vector(sample.indices)
+    Ys = forceScheme(dist(X[sample.indices, ]))
+  }
 
-lamp = function(X, sample.indices = NULL, Ys = NULL) {
-    if (is.null(sample.indices)) {
-        n = nrow(X)
-        sample.indices = sample(1:n, sqrt(n))
-    }
+  # sanity check
+  if (length(sample.indices) != nrow(Ys)) {
+    stop("sample.indices and Ys do not match sizes")
+  }
 
-    Xs = X[sample.indices, ]
+  # we only work with matrices
+  if (!is.matrix(X)) {
+    X = as.matrix(X)
+  }
+  if (!is.matrix(Ys)) {
+    Ys = as.matrix(Ys)
+  }
 
-    if (is.null(Ys)) {
-        Ys = forceScheme(as.matrix(dist(Xs)))
-    }
-
-    Y = t(apply(X, 1, function(point) {
-        alphas = apply(Xs, 1, function(sample.point) sum((sample.point - point)^2))
-        alphas.sum = sum(alphas)
-        alphas.sqrt = sqrt(alphas)
-
-        X.til = colSums(Xs * alphas) / alphas.sum
-        Y.til = colSums(Ys * alphas) / alphas.sum
-        X.hat = sweep(Xs, 2, X.til, '-')
-        Y.hat = sweep(Ys, 2, Y.til, '-')
-
-        A = X.hat * alphas.sqrt
-        B = Y.hat * alphas.sqrt
-        AtB = t(A) %*% B
-        s = propack.svd(AtB, neig = 2) # We just need the first 2
-        M = s$u %*% s$v
-
-        y = (point - X.til) %*% M + Y.til
-        y
-    }))
+  .Call("mp_lamp", X, sample.indices, Ys, PACKAGE="mp")
 }
+
+#lamp = function(X, sample.indices = NULL, Ys = NULL) {
+#    if (is.null(sample.indices)) {
+#        n = nrow(X)
+#        sample.indices = sample(1:n, sqrt(n))
+#    }
+#
+#    Xs = X[sample.indices, ]
+#
+#    if (is.null(Ys)) {
+#        Ys = forceScheme(as.matrix(dist(Xs)))
+#    }
+#
+#    Y = t(apply(X, 1, function(point) {
+#        alphas = apply(Xs, 1, function(sample.point) sum((sample.point - point)^2))
+#        alphas.sum = sum(alphas)
+#        alphas.sqrt = sqrt(alphas)
+#
+#        X.til = colSums(Xs * alphas) / alphas.sum
+#        Y.til = colSums(Ys * alphas) / alphas.sum
+#        X.hat = sweep(Xs, 2, X.til, '-')
+#        Y.hat = sweep(Ys, 2, Y.til, '-')
+#
+#        A = X.hat * alphas.sqrt
+#        B = Y.hat * alphas.sqrt
+#        AtB = t(A) %*% B
+#        s = propack.svd(AtB, neig = 2) # We just need the first 2
+#        M = s$u %*% s$v
+#
+#        y = (point - X.til) %*% M + Y.til
+#        y
+#    }))
+#}

@@ -40,6 +40,9 @@ forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F) {
 
   # convert d to a matrix
   dmat = as.matrix(d)
+  if (!isSymmetric(dmat)) {
+    stop("Provided distances matrix is not symmetric")
+  }
 
   # get the number of elements
   n = nrow(dmat)
@@ -55,27 +58,10 @@ forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F) {
   }
 
   p = initial
-
-  # switch core implementation
-  pC = .C("force_scheme",
-          p = as.numeric(p),
-          dmat = as.numeric(dmat),
-          n = as.integer(n),
-          max_it = as.integer(max.it),
-          tol = as.double(tol),
-          EPSILON = as.double(EPSILON),
-          fraction = as.double(fraction))$p
-
+  pC = .Call("mp_forceScheme", PACKAGE = "mp", p, dmat, max.it, tol, EPSILON, fraction)
   p = cbind(pC[1:n], pC[(n+1):(2*n)])
 
   # return the 2D rojection
   return(p)
 }
-
-
-
-
-
-
-
 

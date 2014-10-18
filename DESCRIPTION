@@ -1,12 +1,15 @@
 Package: mp
 Type: Package
 Title: Multidimensional Projection Techniques
-Version: 0.1.2
+Version: 0.2.0
 Date: 2014-08-03
 Author: Francisco M. Fatore,
     Samuel G. Fadel
 Maintainer: Francisco M. Fatore <fmfatore@gmail.com>
 Description: Implementation of multidimensional projection techniques
 License: GPL
+Imports: Rcpp (>= 0.11.0)
+LinkingTo: Rcpp, RcppArmadillo
 Depends:
-    R (>= 1.8.0)
+    R (>= 1.8.0),
+    svd
