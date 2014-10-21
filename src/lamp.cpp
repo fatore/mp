@@ -11,14 +11,14 @@ arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
 
     arma::mat Xs = X.rows(sampleIndices);
 
-    int sampleSize = sampleIndices.n_elem;
+    arma::uword sampleSize = sampleIndices.n_elem;
     arma::mat projection(X.n_rows, 2);
-    for (int i = 0; i < X.n_rows; i++) {
+    for (arma::uword i = 0; i < X.n_rows; i++) {
         arma::rowvec point = X.row(i);
 
         // calculate alphas
         arma::rowvec alphas(sampleSize);
-        for (int j = 0; j < sampleSize; j++)
+        for (arma::uword j = 0; j < sampleSize; j++)
             alphas[j] = arma::accu(arma::square(Xs.row(j) - point));
         double alphas_sum = arma::accu(alphas);
         arma::rowvec alphas_sqrt = arma::sqrt(alphas);
