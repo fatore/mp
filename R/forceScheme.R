@@ -34,7 +34,7 @@
 #'
 #' @useDynLib mp
 #' @export
-forceScheme = function(d, initial=NULL, max.it=50, tol=0.1, verbose=F) {
+forceScheme = function(d, initial=NULL, max.it=50, tol=0, verbose=F) {
   EPSILON = 1E-5 # minimum distance between points
   fraction = 8.0 # fraction of delta
 
