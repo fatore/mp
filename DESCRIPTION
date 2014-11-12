@@ -13,5 +13,4 @@ Depends:
     svd
 Imports:
     Rcpp (>= 0.11.0),
-    RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo

@@ -3,6 +3,5 @@
 #'@docType package
 #'@name mp
 #'@import Rcpp
-#'@import RcppArmadillo
 #'@importFrom svd propack.svd
 NULL
