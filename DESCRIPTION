@@ -12,5 +12,5 @@ Depends:
     R (>= 1.8.0),
     svd
 Imports:
-    Rcpp (>= 0.11.0),
+    Rcpp (>= 0.11.0)
 LinkingTo: Rcpp, RcppArmadillo

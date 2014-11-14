@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <vector>
 #include <RcppArmadillo.h>
 
 /*
@@ -7,7 +8,7 @@
  * if this may not be the case, use a better random
  * number generator.
  */
-static void shuffle(size_t *array, size_t n)
+static void shuffle(std::vector<size_t> &array, size_t n)
 {
     if (n > 1) {
         for (size_t i = 0; i < n - 1; i++) {
@@ -34,7 +35,7 @@ arma::mat forceScheme(arma::mat p,
     arma::rowvec diff(2);
     size_t size = (size_t) p.n_rows;
 
-    size_t si[size], sj[size];
+    std::vector<size_t> si(size), sj(size);
     for (size_t i = 0; i < size; i++)
         si[i] = sj[i] = i;
 
