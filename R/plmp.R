@@ -40,6 +40,7 @@ plmp = function(X, sample.indices=NULL, Ys=NULL, k=2) {
   if (is.null(Ys)) {
     sample.indices = as.vector(sample.indices)
     Ys = forceScheme(dist(Xs))
+    # FIXME: forceScheme is always 2D, using k > 2 will break the code
   }
 
   if (!is.matrix(Ys)) {

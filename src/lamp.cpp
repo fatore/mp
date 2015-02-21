@@ -45,7 +45,7 @@ arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
         arma::mat U, V;
         arma::vec s;
         arma::svd(U, s, V, At * B);
-        arma::mat M = U.cols(0, 1) * V.t(); // only need first two cols of U
+        arma::mat M = U.cols(0, 1) * V.t();
 
         // the projection of point i
         projection.row(i) = (point - Xtil) * M + Ytil;
