@@ -42,7 +42,6 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
     Ys = as.matrix(Ys)
   }
 
-  # sanity check
   if (length(sample.indices) != nrow(Ys)) {
     stop("sample.indices and Ys must have the same number of instances")
   }
