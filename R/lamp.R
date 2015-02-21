@@ -1,10 +1,13 @@
 #' Local Affine Multidimensional Projection
 #'
-#' Creates a 2D representation of the data based on an initial projectec sample.
+#' Creates a 2D representation of the data. Requires a subsample
+#' (sample.indices) and its 2D representation (Ys).
 #'
-#' @param X A data frame or matrix to be projected.
-#' @param sample.indices The indices of data points in X considered as samples.
-#' @param Ys Initial 2D configuration of the data samples (will be ignored if
+#' @param X A data frame or matrix.
+#' @param sample.indices The indices of data points in X used as subsamples. If
+#'   not given, some points will be randomly selected and Ys will be generated
+#'   by calling forceScheme with them.
+#' @param Ys Initial 2D configuration of the data subsamples (will be ignored if
 #'   sample.indices is NULL).
 #' @return The 2D representation of the data.
 #'
