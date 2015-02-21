@@ -31,8 +31,9 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
   if (is.null(sample.indices)) {
     n = nrow(X)
     sample.indices = sample(1:n, sqrt(n))
-    Ys = forceScheme(dist(X[sample.indices, ]))
-  } else if (is.null(Ys)) {
+  }
+
+  if (is.null(Ys)) {
     sample.indices = as.vector(sample.indices)
     Ys = forceScheme(dist(X[sample.indices, ]))
   }
@@ -43,7 +44,7 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
 
   # sanity check
   if (length(sample.indices) != nrow(Ys)) {
-    stop("sample.indices and Ys do not match sizes")
+    stop("sample.indices and Ys must have the same number of instances")
   }
 
   .Call("mp_lamp", X, sample.indices, Ys, PACKAGE="mp")
@@ -62,7 +63,7 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
 #    }
 #
 #    Y = t(apply(X, 1, function(point) {
-#        alphas = apply(Xs, 1, function(sample.point) sum((sample.point - point)^2))
+#        alphas = apply(Xs, 1, function(sample.point) 1 / sum((sample.point - point)^2))
 #        alphas.sum = sum(alphas)
 #        alphas.sqrt = sqrt(alphas)
 #

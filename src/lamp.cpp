@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <RcppArmadillo.h>
 
 static const double EPSILON = 1e-3;
@@ -8,10 +9,6 @@ static const double EPSILON = 1e-3;
 // [[Rcpp::export]]
 arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
 {
-    // environment for calling "propack.svd" from package "svd"
-    Rcpp::Environment svd("package:svd");
-    Rcpp::Function propack_svd = svd["propack.svd"];
-
     arma::mat Xs = X.rows(sampleIndices);
     arma::uword sampleSize = sampleIndices.n_elem;
     arma::mat projection(X.n_rows, 2);
@@ -23,10 +20,9 @@ arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
         arma::rowvec alphas(sampleSize);
         for (arma::uword j = 0; j < sampleSize; j++) {
             double dist = arma::accu(arma::square(Xs.row(j) - point));
-            if (dist < EPSILON)
-                dist = EPSILON;
-            alphas[j] = 1. / dist;
+            alphas[j] = 1. / std::max(dist, EPSILON);
         }
+
         double alphas_sum = arma::accu(alphas);
         arma::rowvec alphas_sqrt = arma::sqrt(alphas);
 
@@ -46,9 +42,10 @@ arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
         arma::mat B = Yhat;
         B.each_col() %= alphas_sqrt.t();
 
-        // we need only the first 2 vectors in U and V
-        Rcpp::List s = Rcpp::as<Rcpp::List>(propack_svd(At * B, Rcpp::Named("neig", 2)));
-        arma::mat M = Rcpp::as<arma::mat>(s["u"]) * Rcpp::as<arma::mat>(s["v"]).t();
+        arma::mat U, V;
+        arma::vec s;
+        arma::svd(U, s, V, At * B);
+        arma::mat M = U.cols(0, 1) * V.t(); // only need first two cols of U
 
         // the projection of point i
         projection.row(i) = (point - Xtil) * M + Ytil;
