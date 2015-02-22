@@ -1,4 +1,4 @@
-#' Part-linear Multidimensional Projection
+#' Part-Linear Multidimensional Projection
 #'
 #' Creates a low-dimensional representation of the data. As input, a subsample
 #' and its low-dimensional mapping (control points) are required. The method
