@@ -3,8 +3,13 @@ PKGVER  = 0.3
 
 all: dist
 
-dist:
+attributes:
+	Rscript -e 'library(Rcpp)' -e 'compileAttributes()'
+
+roxygen: DESCRIPTION
 	Rscript -e 'library(roxygen2)' -e 'roxygenize()'
+
+dist: roxygen
 	R CMD build .
 
 install: dist
