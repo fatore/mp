@@ -52,5 +52,5 @@ tSNE = function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000, apply.pca=TRUE) {
     # TODO: apply PCA here
   }
 
-  .Call("mp_tSNE", X, Y, k, perplexity, n.iter, PACKAGE="mp")
+  .Call("mp_tSNE", X, Y, perplexity, k, n.iter, PACKAGE="mp")
 }

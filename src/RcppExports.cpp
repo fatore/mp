@@ -43,3 +43,22 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// tSNE
+arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma::uword niter);
+RcppExport SEXP mp_tSNE(SEXP XSEXP, SEXP YSEXP, SEXP perplexitySEXP, SEXP kSEXP, SEXP niterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP );
+        Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP );
+        Rcpp::traits::input_parameter< double >::type perplexity(perplexitySEXP );
+        Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP );
+        Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP );
+        arma::mat __result = tSNE(X, Y, perplexity, k, niter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

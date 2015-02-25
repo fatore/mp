@@ -16,7 +16,7 @@ static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double to
 static double hBeta(const arma::rowvec &Di, double beta, arma::rowvec &Pi);
 
 double lowerBound(double x) {
-    return std::max(x, 1e-10);
+    return std::max(x, 1e-12);
 }
 
 /*
@@ -45,7 +45,7 @@ arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma:
         arma::inplace_trans(num);
         num.each_col() += sumY;
         num = 1 / (num + 1);
-        num.diag() *= 0;
+        num.diag() = 0;
         Q = num / arma::accu(num);
         Q.transform(lowerBound); // Q = max(Q, 1e-12);
 
@@ -76,7 +76,7 @@ static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double to
     D.each_col() += sumX;
     arma::inplace_trans(D);
     D.each_col() += sumX;
-    D.diag() *= 0;
+    D.diag() = 0;
     double logU = log(perplexity);
     arma::rowvec beta(X.n_rows, arma::fill::ones);
 
