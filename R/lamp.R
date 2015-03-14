@@ -31,6 +31,7 @@ lamp = function(X, sample.indices=NULL, Ys=NULL) {
   if (is.null(sample.indices)) {
     n = nrow(X)
     sample.indices = sample(1:n, sqrt(n))
+    Ys = NULL
   }
 
   if (is.null(Ys)) {
