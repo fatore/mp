@@ -26,18 +26,19 @@ double lowerBound(double x) {
 arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma::uword niter)
 {
     arma::uword n = X.n_rows;
-    arma::mat P(n, n);
+    arma::mat P(n, n, arma::fill::zeros);
     calcP(X, P, perplexity);
     P = (P + P.t()) / arma::accu(P);
     P *= EARLY_EXAGGERATION;
-    P.transform(lowerBound);
+    P.transform(lowerBound); // P = max(P, 1e-12)
 
     double momentum;
 
     arma::mat Q(n, n);
     arma::mat dY(n, k),
-              gains(n, k),
-              iY(n, k);
+              gains(n, k, arma::fill::ones),
+              iY(n, k, arma::fill::zeros);
+
     for (arma::uword iter = 0; iter < niter; iter++) {
         arma::vec sumY = arma::sum(Y % Y, 1);
         arma::mat num = -2 * (Y * Y.t());
