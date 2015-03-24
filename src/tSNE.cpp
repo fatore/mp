@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <RcppArmadillo.h>
 
 static const double ETA = 500;
+static const double MIN_GAIN           = 1e-2;
+static const double EPSILON            = 1e-12;
 static const double INITIAL_MOMENTUM   = 0.5;
 static const double FINAL_MOMENTUM     = 0.8;
 static const double EARLY_EXAGGERATION = 4.;
@@ -15,9 +18,20 @@ static const int MAX_BINSEARCH_TRIES         = 50;
 static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double tol = 1e-5);
 static double hBeta(const arma::rowvec &Di, double beta, arma::rowvec &Pi);
 
-double lowerBound(double x) {
-    return std::max(x, 1e-12);
-}
+class MaxTransform
+{
+private:
+    double m_max;
+
+public:
+    MaxTransform(double max): m_max(max) {}
+
+    double operator()(double x) {
+        return std::max(x, m_max);
+    }
+
+    void setMax(double max) { m_max = max; }
+};
 
 /*
  * t-SNE C++ implementation. Refer to the R function for details.
@@ -25,30 +39,33 @@ double lowerBound(double x) {
 // [[Rcpp::export]]
 arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma::uword niter)
 {
-    arma::uword n = X.n_rows;
-    arma::mat P(n, n, arma::fill::zeros);
-    calcP(X, P, perplexity);
-    P = (P + P.t()) / arma::accu(P);
-    P *= EARLY_EXAGGERATION;
-    P.transform(lowerBound); // P = max(P, 1e-12)
-
     double momentum;
-
+    arma::uword n = X.n_rows;
     arma::mat Q(n, n);
     arma::mat dY(n, k),
               gains(n, k, arma::fill::ones),
               iY(n, k, arma::fill::zeros);
+    MaxTransform maxTransform(0);
+
+    arma::mat P(n, n, arma::fill::zeros);
+    calcP(X, P, perplexity);
+    P = (P + P.t());
+    P /= arma::accu(P);
+    P *= EARLY_EXAGGERATION;
+    maxTransform.setMax(EPSILON);
+    P.transform(maxTransform); // P = max(P, 1e-12)
 
     for (arma::uword iter = 0; iter < niter; iter++) {
         arma::vec sumY = arma::sum(Y % Y, 1);
-        arma::mat num = -2 * (Y * Y.t());
+        arma::mat num = -2. * (Y * Y.t());
         num.each_col() += sumY;
         arma::inplace_trans(num);
         num.each_col() += sumY;
-        num = 1 / (num + 1);
+        num = 1. / (1. + num);
         num.diag() *= 0;
         Q = num / arma::accu(num);
-        Q.transform(lowerBound); // Q = max(Q, 1e-12);
+        maxTransform.setMax(EPSILON);
+        Q.transform(maxTransform); // Q = max(Q, 1e-12);
 
         for (arma::uword i = 0; i < n; i++) {
             arma::mat tmp = -Y;
@@ -60,6 +77,8 @@ arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma:
         momentum = (iter < MOMENTUM_THRESHOLD_ITER) ? INITIAL_MOMENTUM : FINAL_MOMENTUM;
         gains = (gains +       GAIN_FRACTION) % ((dY > 0) != (iY > 0))
               + (gains * (1 - GAIN_FRACTION)) % ((dY > 0) == (iY > 0));
+        maxTransform.setMax(MIN_GAIN);
+        gains.transform(maxTransform);
         iY = momentum * iY - ETA * (gains % dY);
         Y += iY;
         Y.each_row() -= mean(Y, 0);
