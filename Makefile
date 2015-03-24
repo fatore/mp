@@ -18,4 +18,4 @@ install: dist
 clean:
 	rm -f $(PKGNAME)_$(PKGVER).tar.gz
 
-.PHONY: clean
+.PHONY: attributes clean roxygen
