@@ -59,7 +59,7 @@ arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma:
 
         momentum = (iter < MOMENTUM_THRESHOLD_ITER) ? INITIAL_MOMENTUM : FINAL_MOMENTUM;
         gains = (gains +       GAIN_FRACTION) % ((dY > 0) != (iY > 0))
-              + (gains * (1 - GAIN_FRACTION)) % ((dY > 0) == (iY > 0)); // TODO: is this correct?
+              + (gains * (1 - GAIN_FRACTION)) % ((dY > 0) == (iY > 0));
         iY = momentum * iY - ETA * (gains % dY);
         Y += iY;
         Y.each_row() -= mean(Y, 0);
