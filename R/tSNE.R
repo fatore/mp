@@ -12,8 +12,6 @@
 #' @param k Target dimension. Avoid anything other than 2 or 3.
 #' @param perplexity Perplexity to use (related to the neighborhood size).
 #' @param n.iter Number of iterations to perform.
-#' @param apply.pca Whether PCA should be applied on the data (reducing
-#'   dimensionality of input data to 30).
 #' @return The kD representation of the data.
 #'
 #' @references L.J.P. van der Maaten and G.E. Hinton. _Visualizing
@@ -27,7 +25,7 @@
 #'
 #' @useDynLib mp
 #' @export
-tSNE = function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000, apply.pca=TRUE) {
+tSNE = function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000) {
   if (!is.matrix(X)) {
     X = as.matrix(X)
   }
@@ -46,10 +44,6 @@ tSNE = function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000, apply.pca=TRUE) {
 
   if (ncol(Y) != k) {
     stop("target dimensionality does not match initial map")
-  }
-
-  if (apply.pca) {
-    # TODO: apply PCA here
   }
 
   .Call("mp_tSNE", X, Y, perplexity, k, n.iter, PACKAGE="mp")
