@@ -2,19 +2,19 @@
 #include <vector>
 #include <RcppArmadillo.h>
 
+typedef std::vector<size_t> V;
+
 /*
- * Arrange the N elements of ARRAY in random order.
- * Only effective if N is much smaller than RAND_MAX;
- * if this may not be the case, use a better random
- * number generator.
+ * Fisher-Yates (aka Knuth) shuffle.
  */
-static void shuffle(std::vector<size_t> &array, size_t n)
+static void shuffle(V &array, size_t n)
 {
-    if (n > 1) {
-        for (size_t i = 0; i < n - 1; i++) {
-            size_t j = i + unif_rand() / (1 / (n - i) + 1);
-            std::swap(array[i], array[j]);
-        }
+    if (n < 2)
+        return;
+
+    for (size_t i = n - 1; i > 0; i--) {
+        size_t j = (size_t) (unif_rand() * (i + 1));
+        std::swap(array[i], array[j]);
     }
 }
 
@@ -22,44 +22,37 @@ static void shuffle(std::vector<size_t> &array, size_t n)
  * Force Scheme C++ implementation. Refer to the R function for details.
  */
 // [[Rcpp::export]]
-arma::mat forceScheme(arma::mat p,
-        arma::mat dmat,
-        int max_it,
+arma::mat forceScheme(arma::mat D,
+        arma::mat Y,
+        int max_iter,
         double tol,
-        double EPSILON,
-        double fraction)
+        double fraction,
+        double EPSILON)
 {
     // get R random number generator
     GetRNGstate();
 
-    arma::rowvec diff(2);
-    size_t size = (size_t) p.n_rows;
-
-    std::vector<size_t> si(size), sj(size);
-    for (size_t i = 0; i < size; i++)
-        si[i] = sj[i] = i;
+    size_t n = (size_t) Y.n_rows;
+    V i(n), j(n);
+    for (size_t k = 0; k < n; k++)
+        i[k] = j[k] = k;
 
     double prev_delta_sum = 1. / 0.;
-    for (int iter = 0; iter < max_it; iter++) {
+    for (int iter = 0; iter < max_iter; iter++) {
         double delta_sum = 0;
-        shuffle(si, size);
-        for (size_t i = 0; i < size; i++) {
-            size_t p1_index = si[i];
-            shuffle(sj, size);
-            for (size_t j = 0; j < size; j++) {
-                size_t p2_index = sj[j];
-                if (p1_index == p2_index)
+
+        shuffle(i, n);
+        for (V::iterator a = i.begin(); a != i.end(); a++) {
+            shuffle(j, n);
+            for (V::iterator b = j.begin(); b != j.end(); b++) {
+                if (*a == *b)
                     continue;
 
-                diff = p.row(p2_index) - p.row(p1_index);
-                // TODO: Verify alternatives to avoid over/underflow
-                double d2 = sqrt(arma::accu(diff % diff));
-                if (d2 < EPSILON)
-                    d2 = EPSILON;
-
-                double delta = (dmat(p1_index, p2_index) - d2) / fraction;
+                arma::rowvec direction(Y.row(*b) - Y.row(*a));
+                double d2 = std::max(arma::norm(direction, 2), EPSILON);
+                double delta = (D(*a, *b) - d2) / fraction;
                 delta_sum += fabs(delta);
-                p.row(p2_index) += delta * (diff / d2);
+                Y.row(*b) += delta * (direction / d2);
             }
         }
 
@@ -70,5 +63,5 @@ arma::mat forceScheme(arma::mat p,
 
     // free R random number generator
     PutRNGstate();
-    return p;
+    return Y;
 }
