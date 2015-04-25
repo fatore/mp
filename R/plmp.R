@@ -1,7 +1,7 @@
 #' Part-Linear Multidimensional Projection
 #'
-#' Creates a low-dimensional representation of the data. As input, a subsample
-#' and its low-dimensional mapping (control points) are required. The method
+#' Creates a k-dimensional representation of the data. As input, a subsample and
+#' its k-dimensional mapping (control points) are required. The method
 #' approximates the subsample mapping to a linear mapping and then applies the
 #' same mapping to all instances.
 #'
@@ -18,33 +18,33 @@
 #' @examples
 #'
 #' # Iris example
-#' proj = plmp(iris[,1:4])
-#' plot(proj, col=iris$Species)
+#' emb <- plmp(iris[,1:4])
+#' plot(emb, col=iris$Species)
 #'
 #' @useDynLib mp
 #' @export
-plmp = function(X, sample.indices=NULL, Ys=NULL, k=2) {
+plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
   if (!is.matrix(X)) {
-    X = as.matrix(X)
+    X <- as.matrix(X)
   }
 
-  n = nrow(X)
-  m = ncol(X)
+  n <- nrow(X)
+  m <- ncol(X)
 
   if (is.null(sample.indices)) {
-    sample.indices = sample(1:n, 3*sqrt(n))
+    sample.indices <- sample(1:n, 3*sqrt(n))
   }
 
-  Xs = X[sample.indices, ]
+  Xs <- X[sample.indices, ]
 
   if (is.null(Ys)) {
-    sample.indices = as.vector(sample.indices)
-    Ys = forceScheme(dist(Xs))
+    sample.indices <- as.vector(sample.indices)
+    Ys <- forceScheme(dist(Xs))
     # FIXME: forceScheme is always 2D, using k > 2 will break the code
   }
 
   if (!is.matrix(Ys)) {
-    Ys = as.matrix(Ys)
+    Ys <- as.matrix(Ys)
   }
 
   if (ncol(Ys) != k) {
@@ -55,17 +55,17 @@ plmp = function(X, sample.indices=NULL, Ys=NULL, k=2) {
     stop("sample.indices and Ys must have the same number of instances")
   }
 
-  P = matrix(NA, nrow = m, ncol = k)
+  P <- matrix(NA, nrow=m, ncol=k)
   for (j in 1:k) {
-    A = t(Xs) %*% Xs
-    b = t(Xs) %*% Ys[, j]
-    L = chol(A)
-    P[, j] = backsolve(L, backsolve(L, b, transpose=T))
+    A <- t(Xs) %*% Xs
+    b <- t(Xs) %*% Ys[, j]
+    L <- chol(A)
+    P[, j] <- backsolve(L, backsolve(L, b, transpose=T))
   }
 
-  Y = matrix(NA, nrow = n, ncol = k)
-  Y[sample.indices, ]  = Ys
-  Y[-sample.indices, ] = X[-sample.indices, ] %*% P
+  Y <- matrix(NA, nrow <- n, ncol <- k)
+  Y[sample.indices, ]  <- Ys
+  Y[-sample.indices, ] <- X[-sample.indices, ] %*% P
 
   Y
 }

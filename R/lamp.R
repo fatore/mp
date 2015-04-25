@@ -18,29 +18,29 @@
 #'
 #' @examples
 #' # Iris example
-#' proj = lamp(iris[, 1:4])
-#' plot(proj, col = iris$Species)
+#' emb <- lamp(iris[, 1:4])
+#' plot(emb, col=iris$Species)
 #'
 #' @useDynLib mp
 #' @export
-lamp = function(X, sample.indices=NULL, Ys=NULL) {
+lamp <- function(X, sample.indices=NULL, Ys=NULL) {
   if (!is.matrix(X)) {
-    X = as.matrix(X)
+    X <- as.matrix(X)
   }
 
   if (is.null(sample.indices)) {
-    n = nrow(X)
-    sample.indices = sample(1:n, sqrt(n))
-    Ys = NULL
+    n <- nrow(X)
+    sample.indices <- sample(1:n, sqrt(n))
+    Ys <- NULL
   }
 
   if (is.null(Ys)) {
-    sample.indices = as.vector(sample.indices)
-    Ys = forceScheme(dist(X[sample.indices, ]))
+    sample.indices <- as.vector(sample.indices)
+    Ys <- forceScheme(dist(X[sample.indices, ]))
   }
 
   if (!is.matrix(Ys)) {
-    Ys = as.matrix(Ys)
+    Ys <- as.matrix(Ys)
   }
 
   if (length(sample.indices) != nrow(Ys)) {

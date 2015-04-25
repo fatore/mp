@@ -53,6 +53,6 @@ forceScheme <- function(D, Y=NULL, max.iter=50, tol=0, fraction = 8.0, eps = 1e-
     stop("initial configuration does not match dataset size");
   }
 
-  .Call("mp_forceScheme", PACKAGE = "mp", D, Y, max.iter, tol, fraction, eps)
+  .Call("mp_forceScheme", D, Y, max.iter, tol, fraction, eps, PACKAGE = "mp")
 }
 
