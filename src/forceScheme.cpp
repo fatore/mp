@@ -1,49 +1,31 @@
 #include <algorithm>
-#include <vector>
 #include <RcppArmadillo.h>
 
-typedef std::vector<size_t> V;
-
-/*
- * Fisher-Yates (aka Knuth) shuffle.
- */
-static void shuffle(V &array, size_t n)
-{
-    if (n < 2)
-        return;
-
-    for (size_t i = n - 1; i > 0; i--) {
-        size_t j = (size_t) (unif_rand() * (i + 1));
-        std::swap(array[i], array[j]);
-    }
-}
+typedef arma::uvec V;
 
 /*
  * Force Scheme C++ implementation. Refer to the R function for details.
  */
 // [[Rcpp::export]]
-arma::mat forceScheme(arma::mat D,
-        arma::mat Y,
+arma::mat forceScheme(const arma::mat & D,
+        arma::mat & Y,
         int max_iter,
         double tol,
         double fraction,
         double EPSILON)
 {
-    // get R random number generator
-    GetRNGstate();
-
-    size_t n = (size_t) Y.n_rows;
+    arma::uword n = Y.n_rows;
     V i(n), j(n);
-    for (size_t k = 0; k < n; k++)
+    for (arma::uword k = 0; k < n; k++)
         i[k] = j[k] = k;
 
     double prev_delta_sum = 1. / 0.;
     for (int iter = 0; iter < max_iter; iter++) {
         double delta_sum = 0;
 
-        shuffle(i, n);
+        arma::shuffle(i);
         for (V::iterator a = i.begin(); a != i.end(); a++) {
-            shuffle(j, n);
+            arma::shuffle(j);
             for (V::iterator b = j.begin(); b != j.end(); b++) {
                 if (*a == *b)
                     continue;
@@ -61,7 +43,5 @@ arma::mat forceScheme(arma::mat D,
         prev_delta_sum = delta_sum;
     }
 
-    // free R random number generator
-    PutRNGstate();
     return Y;
 }

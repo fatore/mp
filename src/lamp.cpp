@@ -1,20 +1,24 @@
 #include <algorithm>
+#include <omp.h>
 #include <RcppArmadillo.h>
+
 
 static const double EPSILON = 1e-3;
 
 /*
  * LAMP C++ implementation. Refer to the R function for details.
  */
+// [[Rcpp::plugins(openmp)]]
 // [[Rcpp::export]]
-arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
+arma::mat lamp(const arma::mat & X, const arma::uvec & sampleIndices, const arma::mat & Ys)
 {
-    arma::mat Xs = X.rows(sampleIndices);
+    const arma::mat &Xs = X.rows(sampleIndices);
     arma::uword sampleSize = sampleIndices.n_elem;
     arma::mat projection(X.n_rows, 2);
 
+    #pragma omp parallel for shared(X, Xs, sampleIndices, Ys, projection)
     for (arma::uword i = 0; i < X.n_rows; i++) {
-        arma::rowvec point = X.row(i);
+        const arma::rowvec &point = X.row(i);
 
         // calculate alphas
         arma::rowvec alphas(sampleSize);
@@ -47,7 +51,6 @@ arma::mat lamp(arma::mat X, arma::uvec sampleIndices, arma::mat Ys)
         arma::svd(U, s, V, At * B);
         arma::mat M = U.cols(0, 1) * V.t();
 
-        // the projection of point i
         projection.row(i) = (point - Xtil) * M + Ytil;
     }
 

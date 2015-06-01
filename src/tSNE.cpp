@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <RcppArmadillo.h>
 
 static const double ETA = 500;
@@ -37,7 +36,7 @@ public:
  * t-SNE C++ implementation. Refer to the R function for details.
  */
 // [[Rcpp::export]]
-arma::mat tSNE(arma::mat X, arma::mat Y, double perplexity, arma::uword k, arma::uword niter)
+arma::mat tSNE(const arma::mat & X, arma::mat & Y, double perplexity, arma::uword k, arma::uword niter)
 {
     double momentum;
     arma::uword n = X.n_rows;
