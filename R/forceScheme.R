@@ -49,6 +49,9 @@ forceScheme <- function(D, Y=NULL, max.iter=50, tol=0, fraction = 8.0, eps = 1e-
   }
 
   # check initial configuration
+  if (!is.matrix(Y)) {
+    Y <- as.matrix(Y)
+  }
   if (nrow(Y) != n) {
     stop("initial configuration does not match dataset size");
   }
