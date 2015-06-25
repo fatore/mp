@@ -10,7 +10,7 @@ static const double EPSILON = 1e-3;
  */
 // [[Rcpp::plugins(openmp)]]
 // [[Rcpp::export]]
-arma::mat lamp(const arma::mat & X, const arma::uvec & sampleIndices, const arma::mat & Ys)
+arma::mat lamp(const arma::mat & X, const arma::uvec & sampleIndices, const arma::mat & Ys, double cp)
 {
     const arma::mat &Xs = X.rows(sampleIndices);
     arma::uword sampleSize = sampleIndices.n_elem;
@@ -25,6 +25,14 @@ arma::mat lamp(const arma::mat & X, const arma::uvec & sampleIndices, const arma
         for (arma::uword j = 0; j < sampleSize; j++) {
             double dist = arma::accu(arma::square(Xs.row(j) - point));
             alphas[j] = 1. / std::max(dist, EPSILON);
+        }
+
+        arma::uword c = (arma::uword) (sampleSize * cp);
+        if (c < sampleSize) {
+            arma::vec alphasCol = alphas.t();
+            arma::uvec idx = arma::sort_index(alphasCol, "descend");
+            for (arma::uword j = c; j < sampleSize; j++)
+                alphas[idx[j]] = 0;
         }
 
         double alphas_sum = arma::accu(alphas);

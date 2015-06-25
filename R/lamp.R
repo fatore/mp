@@ -9,6 +9,7 @@
 #'   by calling forceScheme with them.
 #' @param Ys Initial 2D configuration of the data subsamples (will be ignored if
 #'   sample.indices is NULL).
+#' @param cp Proportion of nearest control points to be used.
 #' @return The 2D representation of the data.
 #'
 #' @references Joia, P.; Paulovich, F.V.; Coimbra, D.; Cuminato, J.A.; Nonato,
@@ -23,7 +24,7 @@
 #'
 #' @useDynLib mp
 #' @export
-lamp <- function(X, sample.indices=NULL, Ys=NULL) {
+lamp <- function(X, sample.indices=NULL, Ys=NULL, cp=1) {
   if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
@@ -47,7 +48,7 @@ lamp <- function(X, sample.indices=NULL, Ys=NULL) {
     stop("sample.indices and Ys must have the same number of instances")
   }
 
-  .Call("mp_lamp", X, sample.indices, Ys, PACKAGE="mp")
+  .Call("mp_lamp", X, sample.indices, Ys, cp, PACKAGE="mp")
 }
 
 #lamp = function(X, sample.indices = NULL, Ys = NULL) {
