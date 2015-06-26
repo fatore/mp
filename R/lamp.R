@@ -5,8 +5,8 @@
 #'
 #' @param X A data frame or matrix.
 #' @param sample.indices The indices of data points in X used as subsamples. If
-#'   not given, some points will be randomly selected and Ys will be generated
-#'   by calling forceScheme with them.
+#'   not given, some points from X will be randomly selected and Ys will be generated
+#'   by calling forceScheme on them.
 #' @param Ys Initial 2D configuration of the data subsamples (will be ignored if
 #'   sample.indices is NULL).
 #' @param cp Proportion of nearest control points to be used.
