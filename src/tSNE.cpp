@@ -36,7 +36,7 @@ public:
  * t-SNE C++ implementation. Refer to the R function for details.
  */
 // [[Rcpp::export]]
-arma::mat tSNE(const arma::mat & X, arma::mat & Y, double perplexity, arma::uword k, arma::uword niter)
+arma::mat tSNE(const arma::mat & X, const arma::mat & initialY, double perplexity, arma::uword k, arma::uword niter, bool isDist)
 {
     double momentum;
     arma::uword n = X.n_rows;
@@ -45,9 +45,20 @@ arma::mat tSNE(const arma::mat & X, arma::mat & Y, double perplexity, arma::uwor
               gains(n, k, arma::fill::ones),
               iY(n, k, arma::fill::zeros);
     MaxTransform maxTransform(0);
+    arma::mat Y = initialY;
 
     arma::mat P(n, n, arma::fill::zeros);
-    calcP(X, P, perplexity);
+    if (!isDist) {
+        arma::mat D = -2 * (X * X.t());
+        arma::colvec sumX = arma::sum(X % X, 1);
+        D.each_col() += sumX;
+        arma::inplace_trans(D);
+        D.each_col() += sumX;
+        D.diag() *= 0;
+
+        calcP(D, P, perplexity);
+    } else
+        calcP(X, P, perplexity);
     P = (P + P.t());
     P /= arma::accu(P);
     P *= EARLY_EXAGGERATION;
@@ -89,18 +100,12 @@ arma::mat tSNE(const arma::mat & X, arma::mat & Y, double perplexity, arma::uwor
     return Y;
 }
 
-static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double tol) {
-    arma::colvec sumX = arma::sum(X % X, 1);
-    arma::mat D = -2 * (X * X.t());
-    D.each_col() += sumX;
-    arma::inplace_trans(D);
-    D.each_col() += sumX;
-    D.diag() *= 0;
+static void calcP(const arma::mat &D, arma::mat &P, double perplexity, double tol) {
     double logU = log(perplexity);
-    arma::rowvec beta(X.n_rows, arma::fill::ones);
+    arma::rowvec beta(D.n_rows, arma::fill::ones);
 
-    arma::rowvec Pi(X.n_rows);
-    for (arma::uword i = 0; i < X.n_rows; i++) {
+    arma::rowvec Pi(D.n_rows);
+    for (arma::uword i = 0; i < D.n_rows; i++) {
         double betaMin = -arma::datum::inf;
         double betaMax =  arma::datum::inf;
         arma::rowvec Di = D.row(i);
