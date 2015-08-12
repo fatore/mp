@@ -30,7 +30,7 @@ tSNE <- function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000) {
   if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
-  is.dist <- isSymmetric(X)
+  is.dist <- is.symmetric(X)
 
   if (is.null(Y)) {
     Y <- matrix(runif(nrow(X) * k), ncol = k)

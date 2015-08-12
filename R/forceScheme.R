@@ -39,7 +39,7 @@
 forceScheme <- function(D, Y=NULL, max.iter=50, tol=0, fraction = 8.0, eps = 1e-5) {
   # convert d to a matrix
   D <- as.matrix(D)
-  if (!isSymmetric(D)) {
+  if (!is.symmetric(D)) {
     stop("distances matrix is not symmetric")
   }
 
