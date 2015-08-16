@@ -45,7 +45,7 @@ forceScheme <- function(D, Y=NULL, max.iter=50, tol=0, fraction = 8.0, eps = 1e-
 
   n <- nrow(D)
   if (is.null(Y)) {
-    Y <- matrix(runif(n*2, 0, 1), ncol=2)
+    Y <- matrix(stats::runif(n*2, 0, 1), ncol=2)
   }
 
   # check initial configuration

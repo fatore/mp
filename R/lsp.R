@@ -14,9 +14,8 @@
 #' @return The qD representation of the data.
 #'
 #' @references F. V. Paulovich, L. Nonato, R. Minghim, and H. Levkowitz,
-#' _Least-Square Projection: A fast high-precision multidimensional projection
-#' technique and its application to document mapping,_ vol. 14, no. 3, pp.
-#' 564–575.
+#' Least-Square Projection: A fast high-precision multidimensional projection
+#' technique and its application to document mapping, vol. 14, no. 3, pp. 564-575.
 #'
 #' @examples
 #' # Iris example

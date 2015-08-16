@@ -37,7 +37,7 @@ lamp <- function(X, sample.indices=NULL, Ys=NULL, cp=1) {
 
   if (is.null(Ys)) {
     sample.indices <- as.vector(sample.indices)
-    Ys <- forceScheme(dist(X[sample.indices, ]))
+    Ys <- forceScheme(stats::dist(X[sample.indices, ]))
   }
 
   if (!is.matrix(Ys)) {
