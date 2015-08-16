@@ -1,3 +1,5 @@
+#' @importFrom stats runif
+{}
 #' Force Scheme Projection
 #'
 #' Creates a 2D representation of the data based on a dissimilarity matrix. A few

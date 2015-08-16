@@ -1,3 +1,5 @@
+#' @importFrom stats dist
+{}
 #' Local Affine Multidimensional Projection
 #'
 #' Creates a 2D representation of the data. Requires a subsample
