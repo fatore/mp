@@ -1,5 +1,7 @@
 #include <algorithm>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <RcppArmadillo.h>
 
 

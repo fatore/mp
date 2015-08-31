@@ -1,12 +1,12 @@
 Package: mp
 Type: Package
 Title: Multidimensional Projection Techniques
-Version: 0.3
+Version: 0.3.1
 Date: 2015-08-16
 Author: Francisco M. Fatore,
     Samuel G. Fadel
 Maintainer: Francisco M. Fatore <fmfatore@gmail.com>
-Description: Multidimensional projection techniques are used to create two-dimensional representations of multidimensional data sets.
+Description: Multidimensional projection techniques are used to create two dimensional representations of multidimensional data sets.
 License: GPL
 Depends:
     R (>= 1.8.0)

@@ -1,5 +1,5 @@
 PKGNAME = mp
-PKGVER  = 0.3
+PKGVER  = 0.3.1
 
 all: dist
 
