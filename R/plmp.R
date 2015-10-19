@@ -57,10 +57,10 @@ plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
 
   Ys <- Ys - colMeans(Ys)
   P <- matrix(NA, nrow=m, ncol=k)
+  A <- t(Xs) %*% Xs
+  L <- chol(A)
   for (j in 1:k) {
-    A <- t(Xs) %*% Xs
     b <- t(Xs) %*% Ys[, j]
-    L <- chol(A)
     P[, j] <- backsolve(L, backsolve(L, b, transpose=T))
   }
 
