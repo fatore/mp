@@ -55,7 +55,7 @@ plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
     stop("sample.indices and Ys must have the same number of instances")
   }
 
-  Ys <- Ys - colMeans(Ys)
+  Ys <- sweep(Ys, 2, colMeans(Ys), "-")
   P <- matrix(NA, nrow=m, ncol=k)
   A <- t(Xs) %*% Xs
   L <- chol(A)
