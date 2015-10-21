@@ -38,9 +38,8 @@ plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
   Xs <- X[sample.indices, ]
 
   if (is.null(Ys)) {
-    sample.indices <- as.vector(sample.indices)
-    Ys <- forceScheme(dist(Xs))
     # FIXME: forceScheme is always 2D, using k > 2 will break the code
+    Ys <- forceScheme(dist(Xs))
   }
 
   if (!is.matrix(Ys)) {
