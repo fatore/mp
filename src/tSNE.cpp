@@ -2,16 +2,17 @@
 #include <cmath>
 #include <RcppArmadillo.h>
 
-static const double ETA = 500;
 static const double MIN_GAIN           = 1e-2;
 static const double EPSILON            = 1e-12;
+
+static const double ETA = 200;
 static const double INITIAL_MOMENTUM   = 0.5;
 static const double FINAL_MOMENTUM     = 0.8;
-static const double EARLY_EXAGGERATION = 4.;
+static const double EARLY_EXAGGERATION = 12.;
 static const double GAIN_FRACTION      = 0.2;
 
-static const int MOMENTUM_THRESHOLD_ITER     = 20;
-static const int EXAGGERATION_THRESHOLD_ITER = 100;
+static const int MOMENTUM_THRESHOLD_ITER     = 250;
+static const int EXAGGERATION_THRESHOLD_ITER = 250;
 static const int MAX_BINSEARCH_TRIES         = 50;
 
 static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double tol = 1e-5);
@@ -36,7 +37,20 @@ public:
  * t-SNE C++ implementation. Refer to the R function for details.
  */
 // [[Rcpp::export]]
-arma::mat tSNE(const arma::mat & X, const arma::mat & initialY, double perplexity, arma::uword k, arma::uword niter, bool isDist)
+arma::mat tSNE(const arma::mat & X,
+               const arma::mat & initialY,
+               double perplexity,
+               arma::uword k,
+               arma::uword niter,
+               bool isDist,
+               double ETA,
+               double INITIAL_MOMENTUM,
+               double FINAL_MOMENTUM,
+               double EARLY_EXAGGERATION,
+               double GAIN_FRACTION,
+               int MOMENTUM_THRESHOLD_ITER,
+               int EXAGGERATION_THRESHOLD_ITER,
+               int MAX_BINSEARCH_TRIES)
 {
     double momentum;
     arma::uword n = X.n_rows;
