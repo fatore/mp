@@ -48,7 +48,7 @@ pekalska <- function(D, sample.indices=NULL, Ys=NULL) {
     stop("sample.indices and Ys must have the same number of instances")
   }
 
-  Ys <- sweep(Ys, 2, colMeans(Ys), "-")
+  Ys <- scale(Ys, center=T, scale=F)
   P <- solve(Ds, Ys)
   Y <- matrix(NA, nrow <- n, ncol <- ncol(Ys))
   Y[sample.indices, ]  <- Ys
