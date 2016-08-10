@@ -17,7 +17,7 @@
 #' @param initial.momentum The initial momentum used before changing
 #' @param final.momentum The momentum to use on remaining iterations
 #' @param early.exaggeration The early exaggeration applied to intial iterations
-#' @param gain.fraction
+#' @param gain.fraction Undocumented
 #' @param momentum.threshold.iter Number of iterations before using the final
 #'                                momentum
 #' @param exaggeration.threshold.iter Number of iterations before using the real

@@ -2,18 +2,8 @@
 #include <cmath>
 #include <RcppArmadillo.h>
 
-static const double MIN_GAIN           = 1e-2;
-static const double EPSILON            = 1e-12;
-
-static const double ETA = 200;
-static const double INITIAL_MOMENTUM   = 0.5;
-static const double FINAL_MOMENTUM     = 0.8;
-static const double EARLY_EXAGGERATION = 12.;
-static const double GAIN_FRACTION      = 0.2;
-
-static const int MOMENTUM_THRESHOLD_ITER     = 250;
-static const int EXAGGERATION_THRESHOLD_ITER = 250;
-static const int MAX_BINSEARCH_TRIES         = 50;
+static const double MIN_GAIN = 1e-2;
+static const double EPSILON  = 1e-12;
 
 static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double tol = 1e-5);
 static double hBeta(const arma::rowvec &Di, double beta, arma::rowvec &Pi);
@@ -77,7 +67,7 @@ arma::mat tSNE(const arma::mat & X,
     P /= arma::accu(P);
     P *= EARLY_EXAGGERATION;
     maxTransform.setMax(EPSILON);
-    P.transform(maxTransform); // P = max(P, 1e-12)
+    P.transform(maxTransform); // P = max(P, EPSILON)
 
     for (arma::uword iter = 0; iter < niter; iter++) {
         arma::vec sumY = arma::sum(Y % Y, 1);
@@ -89,7 +79,7 @@ arma::mat tSNE(const arma::mat & X,
         num.diag() *= 0;
         Q = num / arma::accu(num);
         maxTransform.setMax(EPSILON);
-        Q.transform(maxTransform); // Q = max(Q, 1e-12);
+        Q.transform(maxTransform); // Q = max(Q, EPSILON);
 
         for (arma::uword i = 0; i < n; i++) {
             arma::mat tmp = -Y;
@@ -102,7 +92,7 @@ arma::mat tSNE(const arma::mat & X,
         gains = (gains +       GAIN_FRACTION) % ((dY > 0) != (iY > 0))
               + (gains * (1 - GAIN_FRACTION)) % ((dY > 0) == (iY > 0));
         maxTransform.setMax(MIN_GAIN);
-        gains.transform(maxTransform);
+        gains.transform(maxTransform); // gains = max(gains, MIN_GAIN)
         iY = momentum * iY - ETA * (gains % dY);
         Y += iY;
         Y.each_row() -= mean(Y, 0);
@@ -114,7 +104,7 @@ arma::mat tSNE(const arma::mat & X,
     return Y;
 }
 
-static void calcP(const arma::mat &D, arma::mat &P, double perplexity, double tol) {
+static void calcP(const arma::mat &D, arma::mat &P, double perplexity, double tol, int MAX_BINSEARCH_TRIES) {
     double logU = log(perplexity);
     arma::rowvec beta(D.n_rows, arma::fill::ones);
 
