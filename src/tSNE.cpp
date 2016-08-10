@@ -5,7 +5,7 @@
 static const double MIN_GAIN = 1e-2;
 static const double EPSILON  = 1e-12;
 
-static void calcP(const arma::mat &X, arma::mat &P, double perplexity, double tol = 1e-5);
+static void calcP(const arma::mat &X, arma::mat &P, double perplexity, int MAX_BINSEARCH_TRIES, double tol = 1e-5);
 static double hBeta(const arma::rowvec &Di, double beta, arma::rowvec &Pi);
 
 class MaxTransform
@@ -60,9 +60,9 @@ arma::mat tSNE(const arma::mat & X,
         D.each_col() += sumX;
         D.diag() *= 0;
 
-        calcP(D, P, perplexity);
+        calcP(D, P, perplexity, MAX_BINSEARCH_TRIES);
     } else
-        calcP(X, P, perplexity);
+        calcP(X, P, perplexity, MAX_BINSEARCH_TRIES);
     P = (P + P.t());
     P /= arma::accu(P);
     P *= EARLY_EXAGGERATION;
@@ -104,7 +104,7 @@ arma::mat tSNE(const arma::mat & X,
     return Y;
 }
 
-static void calcP(const arma::mat &D, arma::mat &P, double perplexity, double tol, int MAX_BINSEARCH_TRIES) {
+static void calcP(const arma::mat &D, arma::mat &P, double perplexity, int MAX_BINSEARCH_TRIES, double tol) {
     double logU = log(perplexity);
     arma::rowvec beta(D.n_rows, arma::fill::ones);
 
