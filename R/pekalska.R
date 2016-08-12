@@ -37,7 +37,7 @@ pekalska <- function(D, sample.indices=NULL, Ys=NULL) {
 
   if (is.null(Ys)) {
     # forceScheme is always 2D
-    Ys <- forceScheme(dist(Xs))
+    Ys <- forceScheme(Ds)
   }
 
   if (!is.matrix(Ys)) {
