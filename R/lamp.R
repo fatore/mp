@@ -10,7 +10,8 @@
 #'   not given, some points from X will be randomly selected and Ys will be generated
 #'   by calling forceScheme on them.
 #' @param Ys Initial 2D configuration of the data subsamples (will be ignored if
-#'   sample.indices is NULL).
+#'   sample.indices is NULL). Scaling the columns to [-0.5, 0.5] is recommended
+#'   to avoid scaling problems.
 #' @param cp Proportion of nearest control points to be used.
 #' @return The 2D representation of the data.
 #'
