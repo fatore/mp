@@ -53,8 +53,8 @@ arma::mat lamp(const arma::mat & X, const arma::uvec & RsampleIndices, const arm
         arma::rowvec alphas_sqrt = arma::sqrt(alphas);
 
         // calculate \tilde{X} and \tilde{Y}
-        arma::rowvec Xtil = arma::sum(alphas * Xs, 0) / alphas_sum;
-        arma::rowvec Ytil = arma::sum(alphas * Ys, 0) / alphas_sum;
+        arma::rowvec Xtil = (alphas * Xs) / alphas_sum;
+        arma::rowvec Ytil = (alphas * Ys) / alphas_sum;
 
         // calculate \hat{X} and \hat{Y}
         arma::mat Xhat = Xs;
