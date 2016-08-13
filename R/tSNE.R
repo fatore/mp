@@ -13,6 +13,18 @@
 #' @param k Target dimensionality. Avoid anything other than 2 or 3.
 #' @param perplexity A rough upper bound on the neighborhood size.
 #' @param n.iter Number of iterations to perform.
+#' @param eta The "learning rate" for the cost function minimization
+#' @param initial.momentum The initial momentum used before changing
+#' @param final.momentum The momentum to use on remaining iterations
+#' @param early.exaggeration The early exaggeration applied to intial iterations
+#' @param gain.fraction Undocumented
+#' @param momentum.threshold.iter Number of iterations before using the final
+#'                                momentum
+#' @param exaggeration.threshold.iter Number of iterations before using the real
+#'                                    probabilities
+#' @param max.binsearch.tries Maximum number of tries in binary search for
+#'                            parameters to achieve the target perplexity
+#'
 #' @return The k-dimensional representation of the data.
 #'
 #' @references L.J.P. van der Maaten and G.E. Hinton. _Visualizing
@@ -26,7 +38,19 @@
 #'
 #' @useDynLib mp
 #' @export
-tSNE <- function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000) {
+tSNE <- function(X,
+                 Y=NULL,
+                 k=2,
+                 perplexity=30.0,
+                 n.iter=1000,
+                 eta=500,
+                 initial.momentum=0.5,
+                 final.momentum=0.8,
+                 early.exaggeration=4.0,
+                 gain.fraction=0.2,
+                 momentum.threshold.iter=20,
+                 exaggeration.threshold.iter=100,
+                 max.binsearch.tries=50) {
   if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
@@ -51,5 +75,20 @@ tSNE <- function(X, Y=NULL, k=2, perplexity=30.0, n.iter=1000) {
     stop("target dimensionality does not match initial map")
   }
 
-  .Call("mp_tSNE", X, Y, perplexity, k, n.iter, is.dist, PACKAGE="mp")
+  .Call("mp_tSNE",
+        X,
+        Y,
+        perplexity,
+        k,
+        n.iter,
+        is.dist,
+        eta,
+        initial.momentum,
+        final.momentum,
+        early.exaggeration,
+        gain.fraction,
+        momentum.threshold.iter,
+        exaggeration.threshold.iter,
+        max.binsearch.tries,
+        PACKAGE="mp")
 }

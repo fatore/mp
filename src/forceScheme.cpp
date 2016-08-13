@@ -19,7 +19,7 @@ arma::mat forceScheme(const arma::mat & D,
     for (arma::uword k = 0; k < n; k++)
         i[k] = j[k] = k;
 
-    double prev_delta_sum = 1. / 0.;
+    double prev_delta_sum = std::numeric_limits<double>::infinity();
     for (int iter = 0; iter < max_iter; iter++) {
         double delta_sum = 0;
 
