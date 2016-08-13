@@ -1,6 +1,12 @@
 version: "2"
 services:
+  main:
+    build: .
+    command: make
+
   builder:
     build: .
+    command: make
     volumes:
-      - ./build:/usr/local/src/mp/build
+      - ./dist:/usr/local/src/mp/dist
+
