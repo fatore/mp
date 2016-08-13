@@ -1,7 +1,7 @@
 PKGNAME = mp
-PKGVER  = 0.3.1
+PKGVER  = 0.4.0
 
-all: dist
+all: dist install
 
 attributes:
 	Rscript -e 'library(Rcpp)' -e 'compileAttributes()'

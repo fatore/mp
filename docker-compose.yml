@@ -1,0 +1,6 @@
+version: "2"
+services:
+  builder:
+    build: .
+    volumes:
+      - ./build:/usr/local/src/mp/build
