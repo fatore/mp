@@ -12,13 +12,7 @@
 #'
 #' @references Pekalska, E., de Ridder, D., Duin, R. P., & Kraaijveld, M. A.
 #' (1999). A new method of generalizing Sammon mapping with application to
-#' algorithm speed-up (pp. 221–228).
-#'
-#' @examples
-#'
-#' # Iris example
-#' emb <- pekalska(dist(iris[,1:4]))
-#' plot(emb, col=iris$Species)
+#' algorithm speed-up (pp. 221-228).
 #'
 #' @useDynLib mp
 #' @export
