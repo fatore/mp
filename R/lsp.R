@@ -72,20 +72,16 @@ lsp <- function(X, sample.indices=NULL, Ys=NULL, k=15, q=2) {
     A[i, neighbors] <- -alphas
   }
 
-  for (i in 1:nc) {
-    A[n + i, sample.indices[i]] <- 1
-  }
-
+  A[n + 1:nc, sample.indices[1:nc]] <- 1
   b <- vector("numeric", n + nc)
   b[1:n] <- 0
 
   Y <- matrix(data=NA, nrow=n, ncol=q)
+  L <- t(A) %*% A
+  S <- chol(L)
   for (j in 1:q) {
     b[n + 1:nc] <- Ys[, j]
-
-    L <- t(A) %*% A
     t <- t(A) %*% b
-    S <- chol(L)
     Y[, j] <- backsolve(S, backsolve(S, t, transpose=T))
   }
 
