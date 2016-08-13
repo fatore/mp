@@ -1,7 +1,4 @@
-FROM r-base
-
-RUN apt-get update && \
-  apt-get install texlive -y
+FROM rocker/r-devel:latest
 
 WORKDIR /usr/local/src/mp
 
