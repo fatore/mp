@@ -1,7 +1,11 @@
-PKGNAME = mp
-PKGVER  = 0.4.0
+NAME = mp
+VERSION = 0.4.0
+ARTIFACT=${NAME}_${VERSION}.tar.gz
 
-all: dist install
+all: build install check dist
+
+clean:
+	find . -name $(ARTIFACT) | xargs rm -f
 
 attributes:
 	Rscript -e 'library(Rcpp)' -e 'compileAttributes()'
@@ -9,16 +13,16 @@ attributes:
 roxygen: DESCRIPTION
 	Rscript -e 'library(roxygen2)' -e 'roxygenize()'
 
-dist: roxygen
+build: clean roxygen attributes
 	R CMD build .
 
-install: dist
-	R CMD INSTALL $(PKGNAME)_$(PKGVER).tar.gz
-
-clean:
-	rm -f $(PKGNAME)_$(PKGVER).tar.gz
+install:
+	R CMD INSTALL $(ARTIFACT)
 
 check:
-	R CMD check --as-cran $(PKGNAME)_$(PKGVER).tar.gz
+	R CMD check --as-cran $(ARTIFACT)
 
-.PHONY: attributes clean roxygen
+dist:
+	cd dist; R CMD build ..
+
+.PHONY: attributes clean roxygen dist
