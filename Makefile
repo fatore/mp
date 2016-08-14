@@ -1,5 +1,5 @@
 NAME = mp
-VERSION = 0.4.0
+VERSION = 0.4.1
 ARTIFACT=${NAME}_${VERSION}.tar.gz
 
 all: build install check dist
