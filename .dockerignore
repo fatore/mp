@@ -1,4 +1,8 @@
-Dockerfile
-docker-compose.yml
-.dockerignore
-*.md
+*
+!Makefile
+!install-packages.R
+!.Rbuildignore
+!R/
+!src/
+!DESCRIPTION
+
