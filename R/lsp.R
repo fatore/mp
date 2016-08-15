@@ -73,18 +73,9 @@ lsp <- function(X, sample.indices=NULL, Ys=NULL, k=15, q=2) {
   }
 
   A[n + 1:nc, sample.indices[1:nc]] <- 1
-  b <- vector("numeric", n + nc)
-  b[1:n] <- 0
+  b <- matrix(NA, nrow=(n + nc), ncol=q)
+  b[1:n, 1:q] <- 0
+  b[1:nc + n, 1:q] < Ys[, 1:q]
 
-  Y <- matrix(data=NA, nrow=n, ncol=q)
-  L <- t(A) %*% A
-  S <- chol(L)
-  for (j in 1:q) {
-    b[n + 1:nc] <- Ys[, j]
-    t <- t(A) %*% b
-    Y[, j] <- backsolve(S, backsolve(S, t, transpose=T))
-  }
-
-  Y[sample.indices, ] <- Ys
-  Y
+  .Call("mp_lsp", A, b, sample.indices, Ys, package="mp")
 }

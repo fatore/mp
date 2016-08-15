@@ -55,18 +55,6 @@ plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
   }
 
   Ys <- scale(Ys, center=T, scale=F)
-  P <- matrix(NA, nrow=m, ncol=k)
-  A <- t(Xs) %*% Xs
-  L <- chol(A)
-  for (j in 1:k) {
-    b <- t(Xs) %*% Ys[, j]
-    P[, j] <- backsolve(L, backsolve(L, b, transpose=T))
-  }
-
-  Y <- matrix(NA, nrow <- n, ncol <- k)
-  Y[sample.indices, ]  <- Ys
-  Y[-sample.indices, ] <- X[-sample.indices, ] %*% P
-
-  Y
+  .Call("mp_plmp", X, sample.indices, Ys, package="mp")
 }
 
