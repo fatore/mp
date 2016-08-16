@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <RcppArmadillo.h>
 
+static const double EPSILON = 1e-7;
+
 /*
  * PLMP C++ implementation. Refer to the R function for details.
  */
@@ -9,12 +11,15 @@ arma::mat plmp(const arma::mat & X, const arma::uvec & RsampleIndices, const arm
 {
     // R indices start from 1; we start from 0
     const arma::uvec sampleIndices = RsampleIndices - 1;
-    const arma::mat &Xs = X.rows(sampleIndices);
     arma::uword sampleSize = sampleIndices.n_elem;
-    arma::mat projection(X.n_rows, Ys.n_cols);
+    const arma::mat &Xs_ = X.rows(sampleIndices);
+
+    // Used to avoid singular linear systems
+    arma::mat Xs = Xs_.cols(arma::any(Xs_ > EPSILON));
+    Xs.diag().ones();
 
     arma::mat P = arma::solve(Xs.t() * Xs, Xs.t() * Ys);
-    projection = X * P;
+    arma::mat projection = X * P;
     projection.rows(sampleIndices) = Ys;
 
     return projection;
