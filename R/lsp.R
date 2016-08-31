@@ -52,39 +52,5 @@ lsp <- function(X, sample.indices=NULL, Ys=NULL, k=15, q=2) {
     stop("target dimensionality must be the same as Ys'")
   }
 
-  nc <- length(sample.indices)
-  A <- matrix(data=0, nrow=n + nc, ncol=n)
-
-  Dx <- as.matrix(dist(X))
-  for (i in 1:n) {
-    neighbors <- order(Dx[i, ])[1 + 1:k]
-    A[i, i] <- 1
-    alphas <- Dx[i, neighbors]
-    if (any(alphas < 1e-6)) {
-      idx <- which(alphas < 1e-6)[1]
-      alphas <- 0
-      alphas[idx] <- 1
-    } else {
-      alphas <- 1/alphas
-      alphas <- alphas / sum(alphas)
-      alphas <- alphas / sum(alphas) # With two we guarantee sum(alphas) == 1
-    }
-    A[i, neighbors] <- -alphas
-  }
-
-  A[n + 1:nc, sample.indices[1:nc]] <- 1
-  b <- vector("numeric", n + nc)
-  b[1:n] <- 0
-
-  Y <- matrix(data=NA, nrow=n, ncol=q)
-  L <- t(A) %*% A
-  S <- chol(L)
-  for (j in 1:q) {
-    b[n + 1:nc] <- Ys[, j]
-    t <- t(A) %*% b
-    Y[, j] <- backsolve(S, backsolve(S, t, transpose=T))
-  }
-
-  Y[sample.indices, ] <- Ys
-  Y
+  .Call("mp_lsp", X, sample.indices, Ys, k, q, package="mp")
 }

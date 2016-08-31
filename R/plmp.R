@@ -8,7 +8,6 @@
 #' @param X A dataframe or matrix representing the data.
 #' @param sample.indices The indices of subsamples used as control points.
 #' @param Ys The control points.
-#' @param k The target dimensionality.
 #' @return The low-dimensional representation of the data.
 #'
 #' @references Paulovich, F.V.; Silva, C.T.; Nonato, L.G., "Two-Phase Mapping
@@ -23,31 +22,23 @@
 #'
 #' @useDynLib mp
 #' @export
-plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
+plmp <- function(X, sample.indices=NULL, Ys=NULL) {
   if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
 
   n <- nrow(X)
-  m <- ncol(X)
 
   if (is.null(sample.indices)) {
     sample.indices <- sample(1:n, 3*sqrt(n))
   }
 
-  Xs <- X[sample.indices, ]
-
   if (is.null(Ys)) {
-    # FIXME: forceScheme is always 2D, using k > 2 will break the code
-    Ys <- forceScheme(dist(Xs))
+    Ys <- forceScheme(dist(X[sample.indices, ]))
   }
 
   if (!is.matrix(Ys)) {
     Ys <- as.matrix(Ys)
-  }
-
-  if (ncol(Ys) != k) {
-    stop("target dimensionality does not match Ys")
   }
 
   if (length(sample.indices) != nrow(Ys)) {
@@ -55,18 +46,6 @@ plmp <- function(X, sample.indices=NULL, Ys=NULL, k=2) {
   }
 
   Ys <- scale(Ys, center=T, scale=F)
-  P <- matrix(NA, nrow=m, ncol=k)
-  A <- t(Xs) %*% Xs
-  L <- chol(A)
-  for (j in 1:k) {
-    b <- t(Xs) %*% Ys[, j]
-    P[, j] <- backsolve(L, backsolve(L, b, transpose=T))
-  }
-
-  Y <- matrix(NA, nrow <- n, ncol <- k)
-  Y[sample.indices, ]  <- Ys
-  Y[-sample.indices, ] <- X[-sample.indices, ] %*% P
-
-  Y
+  .Call("mp_plmp", X, sample.indices, Ys, package="mp")
 }
 
