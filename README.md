@@ -1,5 +1,7 @@
 # MP Package
 
+[![](https://cranlogs.r-pkg.org/badges/mp)](https://cran.rstudio.com/web/packages/mp/index.html)
+
 Multidimensional projection techniques are used to create two dimensional representations of multidimensional data sets.
 
 https://cran.r-project.org/web/packages/mp/index.html
